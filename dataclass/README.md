@@ -1,0 +1,1 @@
+Generated from https://app.quicktype.io/
