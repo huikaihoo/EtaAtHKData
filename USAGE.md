@@ -8,7 +8,7 @@ echo MY_SECRET_TOKEN > ~/.gist
 ```
 
 # KMB
-Download latest apk from https://apk-dl.com/dl/com.kmb.app1933 to `download\kmb-<version>.zip`
+Download latest apk from https://apk-dl.com/app-1933-kmblwb/com.kmb.app1933 to `download\kmb\kmb-<version>.zip`
 
 ```
 python3 12_download_kmb.py
@@ -17,3 +17,9 @@ sh 14_upload_kmb.sh GIST_ID
 ```
 
 # NWFB
+
+```
+python3 22_download_nwfb.py
+python3 23_process_nwfb.py
+sh 24_upload_mwfbb.sh GIST_ID
+```

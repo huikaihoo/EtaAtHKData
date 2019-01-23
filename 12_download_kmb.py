@@ -1,5 +1,8 @@
-import configparser, json, os, shutil, sqlite3, sys, urllib.request, zipfile
+import configparser, json, os, shutil, sqlite3, sys, time, urllib.request, zipfile
 import xml.etree.cElementTree as ElementTree
+
+COMPANY = "KMB"
+
 
 def get_config() -> bool:
     # Get Config from config.ini
@@ -7,25 +10,30 @@ def get_config() -> bool:
     config.read("config.ini")
 
     global APP_VERSION
-    APP_VERSION = config["KMB"]["APP_VERSION"]
+    APP_VERSION = config[COMPANY]["APP_VERSION"]
     if not APP_VERSION:
         print("Invalid APP_VERSION: {}".format(APP_VERSION))
         return False
 
+    global LAST_UPDATE
+    LAST_UPDATE = config[COMPANY]["LAST_UPDATE"]
+    if not LAST_UPDATE:
+        print("Empty LAST_UPDATE")
+
     global DOWNLOAD_URL
-    DOWNLOAD_URL = config["KMB"]["DOWNLOAD_URL"]
+    DOWNLOAD_URL = config[COMPANY]["DOWNLOAD_URL"]
     if not DOWNLOAD_URL:
         print("Invalid DOWNLOAD_URL: {}".format(DOWNLOAD_URL))
         return False
 
     global DOWNLOAD_PATH
-    DOWNLOAD_PATH = config["KMB"]["DOWNLOAD_PATH"]
+    DOWNLOAD_PATH = config[COMPANY]["DOWNLOAD_PATH"]
     if not DOWNLOAD_PATH:
         print("Invalid DOWNLOAD_PATH: {}".format(DOWNLOAD_PATH))
         return False
 
     global DATA_PATH
-    DATA_PATH = config["KMB"]["DATA_PATH"]
+    DATA_PATH = config[COMPANY]["DATA_PATH"]
     if not DATA_PATH:
         print("Invalid DATA_PATH: {}".format(DATA_PATH))
         return False
@@ -34,6 +42,8 @@ def get_config() -> bool:
 
 
 def main():
+    t = str(int(time.time()))
+
     # Check if download/kmb-<version>.apk exist
     if not os.path.isfile("{}kmb-{}.apk".format(DOWNLOAD_PATH, APP_VERSION)):
         print("Missing file: {}kmb-{}.apk".format(DOWNLOAD_PATH, APP_VERSION))
@@ -49,18 +59,24 @@ def main():
     print("Database extracted to: {}kmb-{}.db".format(DOWNLOAD_PATH, APP_VERSION))
 
     # Download DB update sql to kmb-<version>.xml
-    print("Get SQL from url: {}".format(DOWNLOAD_URL.format(APP_VERSION)))
+    print("Get SQL from url: {}".format(DOWNLOAD_URL.format(APP_VERSION, LAST_UPDATE)))
 
     opener = urllib.request.build_opener()
-    response = opener.open(DOWNLOAD_URL.format(APP_VERSION))
+    response = opener.open(DOWNLOAD_URL.format(APP_VERSION, LAST_UPDATE))
 
-    response = opener.open(json.loads(response.read())["deltadataurl"])
+    dataUrl = str(json.loads(response.read())["deltadataurl"])
+    response = opener.open(dataUrl)
     root = ElementTree.fromstring(response.read())
     with open("{}kmb-{}.sql".format(DOWNLOAD_PATH, APP_VERSION), "w") as f:
         for log in root.iter("string"):
             f.write(log.text + ";\n")
 
     print("SQL extracted to: {}kmb-{}.sql".format(DOWNLOAD_PATH, APP_VERSION))
+
+    # Reset data
+    if os.path.exists(DATA_PATH):
+        shutil.rmtree(DATA_PATH)
+    os.makedirs(DATA_PATH)
 
     # Build latest db/kmb-<version>.db
     print("Prepare latest database in {}kmb-{}.db".format(DATA_PATH, APP_VERSION))
@@ -83,7 +99,14 @@ def main():
                 print("Error on line {}: {}".format(cnt, sql_statement))
                 sql_statement = ""
 
+            if (cnt % 10000 == 0):
+                print("Running on line {}".format(cnt))
+
+        print("Finish running {} lines of sql".format(cnt))
         conn.commit()
+
+    with open("{}t.txt".format(DATA_PATH), "w", encoding="utf8") as f:
+        f.write(t)
 
     print("Finish download kmb: {}kmb-{}.db".format(DATA_PATH, APP_VERSION))
 
