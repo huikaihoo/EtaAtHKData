@@ -92,6 +92,7 @@ def main():
                 cnt = cnt + 1
                 sql_statement = sql_statement + line
                 if (line.endswith(";\n")):
+                    # TODO: Replace special char
                     db.executescript(sql_statement)
                     sql_statement = ""
 
