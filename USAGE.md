@@ -1,3 +1,6 @@
+# Process flow
+download > data (if needed) > result > upload
+
 # Prepare
 Create secret token from https://github.com/settings/tokens
 
@@ -21,5 +24,13 @@ sh 14_upload_kmb.sh GIST_ID
 ```
 python3 22_download_nwfb.py
 python3 23_process_nwfb.py
-sh 24_upload_mwfbb.sh GIST_ID
+sh 24_upload_nwfb.sh GIST_ID
+```
+
+# MTR Bus
+
+```
+python3 32_download_mtrb.py
+python3 33_process_mtrb.py
+sh 34_upload_mtrb.sh GIST_ID
 ```

@@ -11,6 +11,15 @@ NWFB_VARIANT_RECORD_RDV = 2
 NWFB_VARIANT_RECORD_START_SEQ = 6
 NWFB_VARIANT_RECORD_END_SEQ = 7
 
+APP_VERSION = ""
+APP_PLATFORM = ""
+ROUTE_URL = ""
+VARIANT_URL = ""
+STOP_URL = ""
+USER_AGENT = ""
+ROUTE_LIMIT = ""
+SLEEP_TIME = ""
+DOWNLOAD_PATH = ""
 
 def get_config() -> bool:
     # Get Config from config.ini
@@ -172,6 +181,7 @@ def main():
             print("Finish [{}/{}][{}]".format(cnt + 1, len(parents) - 1, id))
             time.sleep(float(SLEEP_TIME))
 
+    # Finish
     with open("{}t.txt".format(DOWNLOAD_PATH), "w", encoding="utf8") as f:
         f.write(t)
 

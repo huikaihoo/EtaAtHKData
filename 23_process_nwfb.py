@@ -3,6 +3,11 @@ import xml.etree.cElementTree as ElementTree
 
 COMPANY = "NWFB"
 
+APP_VERSION = ""
+DOWNLOAD_PATH = ""
+RESULT_PATH = ""
+UPLOAD_PATH = ""
+
 def get_config() -> bool:
     # Get Config from config.ini
     config = configparser.ConfigParser()

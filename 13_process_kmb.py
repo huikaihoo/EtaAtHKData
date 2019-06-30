@@ -27,6 +27,14 @@ SELECT_STOPS = """
     ORDER BY bound, service_type, stop_seq
 """
 
+APP_VERSION = ""
+EXCLUDE_ROUTES = ""
+KMB_ROUTES_PREFIX = ""
+LWB_ROUTES_PREFIX = ""
+DATA_PATH = ""
+RESULT_PATH = ""
+UPLOAD_PATH = ""
+
 def route_no_to_company(route_no: str) -> str:
     for prefix in KMB_ROUTES_PREFIX:
         if route_no.startswith(prefix.strip()):
@@ -64,7 +72,7 @@ def to_child_route(rec: Any, direction: int) -> Any:
     route.route_key.route_no = rec["route_no"]
     route.route_key.bound = rec["bound_no"]
     route.route_key.variant = int(rec["service_type"])
-    route.direction = 2
+    route.direction = 1 if direction > 1 else direction     # TODO: Check if "Circular" appear in destination
     route.special_code = 0
     route.company_details = [company]
     route.route_from.tc = rec["origin_chi"]
@@ -79,7 +87,7 @@ def to_child_route(rec: Any, direction: int) -> Any:
 
     return route_to_dict(route)
 
-def to_stop(rec: Any, route: Any) -> Any:
+def to_stop(rec: Any, routeRec: Any) -> Any:
     company = route_no_to_company(rec["route_no"])
 
     stop = Stop()
@@ -91,9 +99,9 @@ def to_stop(rec: Any, route: Any) -> Any:
     stop.name.tc = rec["stop_name_chi"]
     stop.name.en = rec["stop_name"]
     stop.name.sc = rec["stop_name_chi"]
-    stop.to.tc = route["destination_chi"]
-    stop.to.en = route["destination"]
-    stop.to.sc = route["destination_cn"]
+    stop.to.tc = routeRec["destination_chi"]
+    stop.to.en = routeRec["destination"]
+    stop.to.sc = routeRec["destination_cn"]
     stop.details.tc = rec["stop_loc_chi1"] + rec["stop_loc_chi2"] + rec["stop_loc_chi3"]
     stop.details.en = (rec["stop_loc1"] + ' ' + rec["stop_loc2"] + ' ' + rec["stop_loc3"]).strip()
     stop.details.sc = rec["stop_loc_cn1"] + rec["stop_loc_cn2"] + rec["stop_loc_cn3"]

@@ -3,6 +3,11 @@ import xml.etree.cElementTree as ElementTree
 
 COMPANY = "KMB"
 
+APP_VERSION = ""
+LAST_UPDATE = ""
+DOWNLOAD_URL = ""
+DOWNLOAD_PATH = ""
+DATA_PATH = ""
 
 def get_config() -> bool:
     # Get Config from config.ini
@@ -49,7 +54,7 @@ def main():
         print("Missing file: {}kmb-{}.apk".format(DOWNLOAD_PATH, APP_VERSION))
         return
 
-    # unzip kmb.mp3 to download/kmb-<version>.db
+    # Unzip kmb.mp3 to download/kmb-<version>.db
     print("Get Database from apk: {}kmb-{}.apk".format(DOWNLOAD_PATH, APP_VERSION))
 
     archive = zipfile.ZipFile("{}kmb-{}.apk".format(DOWNLOAD_PATH, APP_VERSION))
@@ -58,7 +63,7 @@ def main():
 
     print("Database extracted to: {}kmb-{}.db".format(DOWNLOAD_PATH, APP_VERSION))
 
-    # Download DB update sql to kmb-<version>.xml
+    # Download DB update sql to kmb-<version>.sql
     print("Get SQL from url: {}".format(DOWNLOAD_URL.format(APP_VERSION, LAST_UPDATE)))
 
     opener = urllib.request.build_opener()
@@ -106,6 +111,7 @@ def main():
         print("Finish running {} lines of sql".format(cnt))
         conn.commit()
 
+    # Finish
     with open("{}t.txt".format(DATA_PATH), "w", encoding="utf8") as f:
         f.write(t)
 
