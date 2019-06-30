@@ -249,7 +249,7 @@ def main():
 
     # Zip the result
     shutil.make_archive(RESULT_PATH[:-1], 'zip', RESULT_PATH)
-    os.rename("{}.zip".format(RESULT_PATH[:-1]), "{}kmb.zip".format(UPLOAD_PATH))
+    os.rename("{}.zip".format(RESULT_PATH[:-1]), "{}mtrb.zip".format(UPLOAD_PATH))
 
     print("-------------------")
     print("Convert Result:")
