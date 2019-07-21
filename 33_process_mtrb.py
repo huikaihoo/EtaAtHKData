@@ -58,10 +58,16 @@ SELECT_CHILD_ROUTES = """
 """
 
 SELECT_STOPS = """
-    SELECT busStop.*
-    FROM busRouteLine, busStop
+    SELECT busStop.*, busStopGroup.max_sort_order
+    FROM busRouteLine, busStop, 
+    (   
+        SELECT routeLine_ID, MAX(sort_order) AS max_sort_order
+        FROM busStop
+        GROUP BY routeLine_ID
+    ) AS busStopGroup
     WHERE busRouteLine.routeLine_ID = '{}'
     AND busRouteLine.routeLine_ID = busStop.routeLine_ID
+    AND busStopGroup.routeLine_ID = busStop.routeLine_ID
     ORDER BY sort_order
 """
 
@@ -126,6 +132,7 @@ def to_stop(rec: Any, fare: float, childRoute: Any) -> Any:
     stop.longitude = float(rec["longitude"])
     stop.fare = fare
     stop.info.stop_id = rec["ref_ID"]
+    stop.info.end_seq = int(rec["max_sort_order"])
 
     return stop_to_dict(stop)
 

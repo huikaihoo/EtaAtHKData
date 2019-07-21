@@ -61,6 +61,9 @@ def to_parent_route(rec: Any, direction: int) -> Any:
     route.to.tc = rec["destination_chi"]
     route.to.en = rec["destination"]
     route.to.sc = rec["destination_cn"]
+    route.details.tc = ""
+    route.details.en = ""
+    route.details.sc = ""
 
     return route_to_dict(route)
 
@@ -217,7 +220,7 @@ def main():
                 stops.append(to_stop(rec, route_map[rec["bound"] + "_" + rec["service_type"]]))
                 stop_cnt = stop_cnt + 1
 
-            print("[{}]: direction = {} route_cnt = {}, stop_cnt = {}".format(route, route_direction[route], route_cnt, stop_cnt))
+            print("[{}]: company = {}, direction = {}, route_cnt = {}, stop_cnt = {}".format(route, route_no_to_company(route), route_direction[route], route_cnt, stop_cnt))
 
     # Export the result
     metadata = { "parent_cnt": len(parent_routes), "child_cnt": len(child_routes), "stops_cnt": len(stops), "routes": routes, "timestamp": t }
